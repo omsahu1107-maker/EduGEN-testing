@@ -82,6 +82,58 @@ export default function Dashboard() {
                 <StatCard icon="🎯" label="Quizzes Done" value={quizResults.length} color="var(--neon-green)" />
             </div>
 
+            {/* AI Focus Monitor Banner */}
+            <div className="card" style={{ marginBottom: 20, marginTop: 4, background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(16,185,129,0.08))', borderColor: 'rgba(99,102,241,0.25)', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: '2.2rem' }}>👁️</div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: 2 }}>AI Focus & Sleep Detector</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Real-time webcam monitoring — detects if you fall asleep during study sessions</div>
+                </div>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <span className="badge badge-green">🟢 Eye Detection</span>
+                    <span className="badge badge-purple">🔴 Sleep Alert</span>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.04)', padding: '6px 12px', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    👇 See bottom-right corner
+                </div>
+            </div>
+
+            {/* Lucky Spin Banner */}
+            {(() => {
+                const lastSpin = user?.lastSpinDate ? new Date(user.lastSpinDate) : null;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const canSpin = !lastSpin || lastSpin < today;
+
+                return (
+                    <Link to="/spin" className="card glass-hover" style={{
+                        marginBottom: 20,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                        background: canSpin ? 'linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.1))' : 'rgba(255,255,255,0.03)',
+                        borderColor: canSpin ? 'rgba(251,191,36,0.4)' : 'var(--border)',
+                        textDecoration: 'none',
+                        color: 'inherit'
+                    }}>
+                        <div style={{ fontSize: '2rem' }}>🎰</div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 700, fontSize: '1rem', color: canSpin ? '#fbbf24' : 'var(--text-muted)' }}>
+                                {canSpin ? 'Lucky Spin is Available! 🎰' : 'Daily Spin Claimed'}
+                            </div>
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                {canSpin ? 'Spin the wheel now to get bonus XP!' : 'Come back tomorrow for more rewards.'}
+                            </div>
+                        </div>
+                        {canSpin && (
+                            <button className="btn btn-primary btn-sm" style={{ background: '#fbbf24', color: '#000', border: 'none' }}>
+                                Spin Now
+                            </button>
+                        )}
+                    </Link>
+                );
+            })()}
+
             {/* Charts */}
             <div className="dashboard-grid" style={{ marginTop: 20 }}>
                 {/* Study hours chart */}

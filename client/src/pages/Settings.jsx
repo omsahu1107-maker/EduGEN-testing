@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { toast } from '../components/UI';
+import { toast, XPBar } from '../components/UI';
+import { sounds } from '../utils/audio';
 import api from '../api';
 
 export default function Settings() {
     const { user, updateUser } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const [soundEnabled, setSoundEnabled] = useState(sounds.enabled);
     const [passwords, setPasswords] = useState({ currentPassword: '', newPassword: '', confirm: '' });
     const [lang, setLang] = useState(user?.language || 'en');
     const [saving, setSaving] = useState(false);
@@ -49,6 +51,31 @@ export default function Settings() {
                     </div>
                     <button onClick={toggleTheme} className="btn btn-secondary">
                         {theme === 'dark' ? '☀️ Switch to Light' : '🌙 Switch to Dark'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Sound */}
+            <div className="card" style={{ marginBottom: 20 }}>
+                <h3 style={{ fontWeight: 700, marginBottom: 16, fontSize: '1rem' }}>🔊 Audio Feedback</h3>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                        <div style={{ fontWeight: 600 }}>User Interface Sounds</div>
+                        <div style={{ fontSize: '0.83rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                            Play click and success sounds during interactions
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => {
+                            const newState = sounds.toggleMute();
+                            setSoundEnabled(newState);
+                            if (newState) sounds.success();
+                            toast.success(newState ? 'Sounds enabled 🔊' : 'Sounds muted 🔇');
+                        }}
+                        className={`btn ${soundEnabled ? 'btn-secondary' : 'btn-outline'}`}
+                        style={{ minWidth: '140px' }}
+                    >
+                        {soundEnabled ? '🔊 Enabled' : '🔇 Muted'}
                     </button>
                 </div>
             </div>

@@ -7,16 +7,35 @@ const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expires
 // @desc Register user
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, referralCode } = req.body;
         const exists = await User.findOne({ email });
         if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
 
-        const user = await User.create({ name, email, password, role: role === 'admin' ? 'admin' : 'student' });
+        let referredBy = null;
+        if (referralCode) {
+            const referrer = await User.findOne({ referralCode });
+            if (referrer) {
+                referredBy = referrer._id;
+                referrer.xp += 500;
+                referrer.referralCount += 1;
+                referrer.updateLevel();
+                await referrer.save();
+            }
+        }
+
+        const user = await User.create({
+            name,
+            email,
+            password,
+            role: role === 'admin' ? 'admin' : 'student',
+            referredBy
+        });
+
         const token = generateToken(user._id);
         res.status(201).json({
             success: true,
             token,
-            user: { _id: user._id, name: user.name, email: user.email, role: user.role, xp: user.xp, level: user.level, streak: user.streak, avatar: user.avatar, totalStudyHours: user.totalStudyHours, language: user.language },
+            user: { _id: user._id, name: user.name, email: user.email, role: user.role, xp: user.xp, level: user.level, streak: user.streak, avatar: user.avatar, totalStudyHours: user.totalStudyHours, language: user.language, referralCode: user.referralCode },
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -45,7 +64,7 @@ exports.login = async (req, res) => {
         res.json({
             success: true,
             token,
-            user: { _id: user._id, name: user.name, email: user.email, role: user.role, xp: user.xp, level: user.level, streak: user.streak, avatar: user.avatar, theme: user.theme, totalStudyHours: user.totalStudyHours, language: user.language },
+            user: { _id: user._id, name: user.name, email: user.email, role: user.role, xp: user.xp, level: user.level, streak: user.streak, avatar: user.avatar, theme: user.theme, totalStudyHours: user.totalStudyHours, language: user.language, referralCode: user.referralCode },
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

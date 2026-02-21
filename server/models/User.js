@@ -14,13 +14,21 @@ const userSchema = new mongoose.Schema({
   theme: { type: String, enum: ['dark', 'light'], default: 'dark' },
   language: { type: String, enum: ['en', 'hi'], default: 'en' },
   lastLoginDate: { type: Date },
+  lastSpinDate: { type: Date },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   refreshToken: String,
+  referralCode: { type: String, unique: true },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  referralCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
-// Hash password before save (Mongoose 8.x: async hooks do not receive `next`)
+// Generate unique referral code before save
 userSchema.pre('save', async function () {
+  if (!this.referralCode) {
+    this.referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+
   if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
 });

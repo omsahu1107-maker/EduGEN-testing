@@ -103,6 +103,7 @@ exports.getQuestions = async (req, res) => {
                 const sanitized = aiQuestions.map(q => ({
                     _id: q._id, subject: q.subject, difficulty: q.difficulty,
                     question: q.question, options: q.options, xpReward: q.xpReward,
+                    answer: q.answer
                 }));
                 return res.json({ success: true, questions: sanitized, source: 'AI_Live' });
             }
@@ -127,6 +128,7 @@ exports.getQuestions = async (req, res) => {
         const sanitized = questions.map(q => ({
             _id: q._id, subject: q.subject, difficulty: q.difficulty,
             question: q.question, options: q.options, xpReward: q.xpReward,
+            answer: q.answer
         }));
 
         res.json({ success: true, questions: sanitized, source: 'DB' });

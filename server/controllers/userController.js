@@ -79,3 +79,27 @@ exports.getDashboardStats = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+// @desc Handle daily reward spin
+exports.claimDailySpin = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        if (user.lastSpinDate && user.lastSpinDate >= startOfToday) {
+            return res.status(400).json({ success: false, message: 'You have already spun the wheel today!' });
+        }
+
+        const rewards = [50, 100, 150, 200, 250, 500]; // Possible XP rewards
+        const reward = rewards[Math.floor(Math.random() * rewards.length)];
+
+        user.xp += reward;
+        user.lastSpinDate = now;
+        user.updateLevel();
+        await user.save();
+
+        res.json({ success: true, reward, xp: user.xp, lastSpinDate: user.lastSpinDate });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};

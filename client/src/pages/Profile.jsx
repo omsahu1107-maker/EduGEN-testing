@@ -107,6 +107,48 @@ export default function Profile() {
                             ))}
                         </div>
                     </div>
+
+                    <div className="card" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1))', borderColor: 'rgba(99,102,241,0.2)' }}>
+                        <h3 style={{ fontWeight: 700, marginBottom: 10, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            🤝 Referral Program <span className="badge badge-purple" style={{ fontSize: '0.65rem' }}>GET 500 XP</span>
+                        </h3>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 16 }}>
+                            Share your link. You'll get <strong>500 XP</strong> for every friend who joins!
+                        </p>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: 10, border: '1px dashed rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <code style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', letterSpacing: 2 }}>{user?.referralCode}</code>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(user?.referralCode);
+                                        toast.success('Code copied! 📋');
+                                    }}
+                                    className="btn btn-sm btn-outline"
+                                    style={{ padding: '5px 12px', fontSize: '0.75rem' }}
+                                >
+                                    Copy Code
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    const refLink = `${window.location.origin}/register?ref=${user?.referralCode}`;
+                                    navigator.clipboard.writeText(refLink);
+                                    toast.success('Referral link copied! 🔗');
+                                }}
+                                className="btn btn-primary btn-sm"
+                                style={{ width: '100%', justifyContent: 'center' }}
+                            >
+                                🔗 Copy Referral Link
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Total Referrals:</span>
+                            <strong style={{ color: 'var(--neon-orange)' }}>{user?.referralCount || 0}</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

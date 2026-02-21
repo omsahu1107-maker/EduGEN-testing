@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../components/UI';
 
@@ -18,16 +18,28 @@ const STRENGTH_COLORS = ['', '#ef4444', '#f59e0b', '#06b6d4', '#10b981'];
 export default function Register() {
     const { register } = useAuth();
     const navigate = useNavigate();
-    const [form, setForm] = useState({ name: '', email: '', password: '' });
+    const location = useLocation();
+    const [form, setForm] = useState({ name: '', email: '', password: '', referralCode: '' });
     const [loading, setLoading] = useState(false);
+    const [referralApplied, setReferralApplied] = useState(false);
     const strength = getStrength(form.password);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const ref = params.get('ref');
+        if (ref) {
+            setForm(f => ({ ...f, referralCode: ref.toUpperCase() }));
+            setReferralApplied(true);
+            toast.success('Referral code applied! 🤝');
+        }
+    }, [location]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.password.length < 6) { toast.error('Password must be at least 6 characters'); return; }
         setLoading(true);
         try {
-            const user = await register(form.name, form.email, form.password);
+            const user = await register(form.name, form.email, form.password, form.referralCode);
             toast.success(`Welcome to EduGEN, ${user.name}! 🎉`);
             navigate('/dashboard');
         } catch (err) {
@@ -71,6 +83,12 @@ export default function Register() {
                                 </div>
                             </div>
                         )}
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">Referral Code (Optional)</label>
+                        <input type="text" className="input-field" placeholder="Enter a code to get bonus XP" value={form.referralCode}
+                            onChange={e => setForm(f => ({ ...f, referralCode: e.target.value.toUpperCase() }))} />
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: 8 }} disabled={loading}>

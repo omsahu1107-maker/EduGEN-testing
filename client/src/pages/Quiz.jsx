@@ -10,7 +10,7 @@ const DIFF_COLORS = { Easy: '#10b981', Moderate: '#f59e0b', Hard: '#ef4444', Cha
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 export default function Quiz() {
-    const { updateUser } = useAuth();
+    const { updateUser, user } = useAuth();
     const navigate = useNavigate();
     const [phase, setPhase] = useState('setup'); // setup | quiz | result
     const [subject, setSubject] = useState('Mathematics');
@@ -93,7 +93,7 @@ export default function Quiz() {
             const timeTaken = Math.round((Date.now() - startTimeRef.current) / 1000);
             const res = await api.post('/quiz/submit', { subject, difficulty, answers: finalAnswers, timeTaken });
             setResult(res.data);
-            updateUser({ xp: (res.data.result?.user?.xp) });
+            updateUser({ xp: (user.xp || 0) + res.data.xpEarned });
             setPhase('result');
         } catch {
             toast.error('Failed to submit quiz');
