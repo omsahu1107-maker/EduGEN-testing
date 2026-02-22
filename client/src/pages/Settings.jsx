@@ -83,13 +83,15 @@ export default function Settings() {
             {/* Language */}
             <div className="card" style={{ marginBottom: 20 }}>
                 <h3 style={{ fontWeight: 700, marginBottom: 16, fontSize: '1rem' }}>🌍 Language</h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    {[{ code: 'en', label: '🇬🇧 English' }, { code: 'hi', label: '🇮🇳 Hindi' }].map(l => (
-                        <button key={l.code} onClick={() => setLang(l.code)} className="btn" style={{ background: lang === l.code ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', border: `1px solid ${lang === l.code ? 'var(--neon-purple)' : 'var(--border)'}`, color: lang === l.code ? 'var(--neon-purple)' : 'var(--text-secondary)', flex: 1, justifyContent: 'center', padding: '12px' }}>
-                            {l.label}
-                        </button>
-                    ))}
-                    <button onClick={saveLang} className="btn btn-primary" style={{ flexShrink: 0 }}>Save</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 8, flex: 1, minWidth: '220px' }}>
+                        {[{ code: 'en', label: '🇬🇧 English' }, { code: 'hi', label: '🇮🇳 Hindi' }].map(l => (
+                            <button key={l.code} onClick={() => setLang(l.code)} className="btn" style={{ background: lang === l.code ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', border: `1px solid ${lang === l.code ? 'var(--neon-purple)' : 'var(--border)'}`, color: lang === l.code ? 'var(--neon-purple)' : 'var(--text-secondary)', flex: 1, justifyContent: 'center', padding: '12px' }}>
+                                {l.label}
+                            </button>
+                        ))}
+                    </div>
+                    <button onClick={saveLang} className="btn btn-primary" style={{ flexShrink: 0, width: '100% inherit' }}>Save Language</button>
                 </div>
             </div>
 

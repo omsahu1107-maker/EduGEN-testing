@@ -306,6 +306,15 @@ export default function FocusDetector() {
                 overflow: 'hidden',
                 transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
             }}>
+                <style>{`
+                    @media (max-width: 768px) {
+                        #fm-panel {
+                            bottom: 15px !important;
+                            right: 15px !important;
+                            width: ${minimized ? '48px' : '260px'} !important;
+                        }
+                    }
+                `}</style>
                 {/* Header */}
                 <div onClick={() => { sounds.click(); setMinimized(m => !m); }} style={{
                     display: 'flex', alignItems: 'center', gap: 8,

@@ -19,7 +19,8 @@ export default function Login() {
             toast.success(`Welcome back, ${user.name}! 🎉`);
             navigate('/dashboard');
         } catch (err) {
-            const msg = err.response?.data?.message || 'Login failed';
+            console.error('❌ Login Error:', err);
+            const msg = err.response?.data?.message || err.message || 'Login failed. Please check your connection.';
             toast.error(msg);
             setShake(true);
             setTimeout(() => setShake(false), 500);

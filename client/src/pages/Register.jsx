@@ -43,7 +43,9 @@ export default function Register() {
             toast.success(`Welcome to EduGEN, ${user.name}! 🎉`);
             navigate('/dashboard');
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Registration failed');
+            console.error('❌ Registration Error:', err);
+            const msg = err.response?.data?.message || err.message || 'Registration failed. Please check your connection.';
+            toast.error(msg);
         } finally {
             setLoading(false);
         }

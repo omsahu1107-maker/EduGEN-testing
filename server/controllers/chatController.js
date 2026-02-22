@@ -4,10 +4,12 @@ const Message = require('../models/Message');
 // LOCAL KNOWLEDGE BASE (LKB) - Instant offline answers
 const LKB = {
     General: [
-        { keywords: ['what is english', 'english language', 'about english'], response: "**English** is a West Germanic language that originated in medieval England. 🌍\n\nIt is the world's most widely spoken language with **~1.5 billion** speakers and serves as the global language of science, business, technology, and international diplomacy." },
-        { keywords: ['verb'], response: "A **verb** is a word that describes an **action, state, or occurrence**. It is the most important part of a sentence! 📝\n\n**Examples:**\n- Action: *run, dance, read, write*\n- State: *be, seem, feel, know*\n- Occurrence: *happen, occur, develop*" },
-        { keywords: ['noun'], response: "A **noun** is a word that identifies a **person, place, thing, or idea**. 📚\n\n**Examples:**\n- Person: *student, teacher, doctor*\n- Place: *India, school, city*\n- Thing: *book, computer, phone*\n- Idea: *freedom, love, knowledge*" },
-        { keywords: ['adjective'], response: "An **adjective** is a describing word that modifies a noun or pronoun. ✨\n\n**Examples:** *beautiful, smart, large, red, happy*\n\n*'The **smart** student passed the **difficult** exam.'*" },
+        { keywords: ['hi', 'hello', 'hey', 'greetings'], response: "Hello! I am **GURU AI**, your ultra-fast study companion. How can I help you today? 🧠⚡" },
+        { keywords: ['who are you', 'your name', 'about you'], response: "I am **GURU AI Pro**, an advanced educational assistant designed to solve complex logical problems and explain academic concepts with speed! 🚀" },
+        { keywords: ['what is english', 'english language', 'about english'], response: "**English** is a West Germanic language that originated in medieval England. 🌍 It is the global language of science, business, and tech." },
+        { keywords: ['verb'], response: "A **verb** is a word that describes an **action, state, or occurrence**. 📝 (e.g., *run, be, happen*)" },
+        { keywords: ['noun'], response: "A **noun** identifies a **person, place, thing, or idea**. 📚 (e.g., *student, India, book*)" },
+        { keywords: ['adjective'], response: "An **adjective** describes a noun. ✨ (e.g., *beautiful, smart, fast*)" },
         { keywords: ['capital', 'india'], response: "The capital of India is **New Delhi**. 🇮🇳" }
     ],
     Programming: [
@@ -17,14 +19,34 @@ const LKB = {
         { keywords: ['javascript', 'what is', 'function'], response: "JavaScript is a scripting language used to make web pages interactive. 🌐\n\n```js\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\nconsole.log(greet('World'));\n```" }
     ],
     Mathematics: [
-        { keywords: ['pi', 'value of pi'], response: "The value of **Pi (π) ≈ 3.14159265358979...**  🥧\n\nPi is the ratio of a circle's circumference to its diameter. It is an **irrational number** that goes on forever without repeating!" },
-        { keywords: ['pythagoras', 'pythagorean'], response: "**Pythagoras Theorem** states:\n> a² + b² = c²\n\nWhere **c** is the hypotenuse (longest side) of a right triangle. 📐" }
+        { keywords: ['pi', 'value of pi'], response: "The value of **Pi (π) ≈ 3.14159**. It is the ratio of a circle's circumference to its diameter. 🥧" },
+        { keywords: ['pythagoras', 'pythagorean'], response: "**Pythagoras Theorem:** a² + b² = c². 📐" },
+        { keywords: ['area of circle'], response: "Area of a circle = **πr²**. ⭕" }
     ],
     Physics: [
-        { keywords: ["newton's first", 'first law', 'law of inertia'], response: "**Newton's First Law of Motion (Law of Inertia):** 🍎\n\n*An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction, **unless acted upon by an external force**.*" },
-        { keywords: ["newton's second", 'second law', 'f=ma'], response: "**Newton's Second Law of Motion:** ⚡\n\n*Force = Mass × Acceleration*\n\n**F = ma**\n\nThe greater the force applied to an object, the greater its acceleration." }
+        { keywords: ["newton's first", 'first law', 'law of inertia'], response: "**Newton's First Law (Inertia):** 🍎 An object stays at rest or in uniform motion unless acted on by an external force." },
+        { keywords: ["newton's second", 'second law', 'f=ma'], response: "**Newton's Second Law:** ⚡ Force = Mass × Acceleration (**F = ma**)." },
+        { keywords: ['relativity', 'einstein', 'e=mc2'], response: "**General Relativity:** 🌌 Einstein's theory stating that gravity is the curvature of spacetime caused by mass and energy. **E=mc²** shows mass-energy equivalence." }
+    ],
+    Logic: [
+        { keywords: ['riddle', 'river', 'boat'], response: "**Classic Crossing Riddle:** 🚣‍♂️ \n1. Take Goat. \n2. Go back, take Wolf. \n3. Bring Goat back, take Cabbage. \n4. Go back, take Goat. Done!" },
+        { keywords: ['monty hall'], response: "**Monty Hall:** 🚪 **ALWAYS SWITCH!** Your odds double from 33% to 66%." },
+        { keywords: ['what is logic'], response: "**Logic** is the study of correct reasoning and mathematical valid inference. 🧠" }
+    ],
+    Science: [
+        { keywords: ['what is chemistry'], response: "**Chemistry** is the study of matter, its properties, and how substances interact. 🧪" },
+        { keywords: ['what is physics'], response: "**Physics** is the science of matter, energy, motion, and force. ⚛️" },
+        { keywords: ['water', 'formula'], response: "The chemical formula of water is **H₂O**. 💧" }
+    ],
+    History: [
+        { keywords: ['independence', 'india'], response: "India gained independence from British rule on **August 15, 1947**. 🇮🇳" },
+        { keywords: ['world war 2', 'ww2'], response: "**World War II** (1939–1945) was a global conflict between the Allies and the Axis powers. It is the deadliest conflict in history. 🎖️" }
     ]
 };
+
+// Global Cache to reduce API usage and increase speed
+const CHAT_CACHE = new Map();
+const CACHE_LIMIT = 100;
 
 const getLocalFallback = (input, subject) => {
     const query = input.toLowerCase();
@@ -52,12 +74,36 @@ const evaluateMath = (text) => {
     } catch { return null; }
 };
 
-// Direct HTTPS call to Gemini (bypasses SDK fetch issues on Windows)
-const callGeminiDirect = (prompt, apiKey) => {
+// Direct HTTPS call to Gemini with History Support
+const callGeminiDirect = (prompt, history = [], apiKey) => {
     return new Promise((resolve, reject) => {
+        // Construct contents with history
+        const contents = [];
+
+        // Add past exchanges
+        history.forEach(msg => {
+            contents.push({
+                role: msg.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: msg.content }]
+            });
+        });
+
+        // Add current prompt
+        contents.push({
+            role: 'user',
+            parts: [{ text: prompt }]
+        });
+
         const body = JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
+            contents,
+            generationConfig: {
+                maxOutputTokens: 1000,
+                temperature: 0.8,
+                topP: 0.95,
+                topK: 40
+            },
+            // System instructions (System prompt) is sent as the first content in some versions or via separate field
+            // For v1beta, we can prepend it to the first user message or use safe instructions
         });
 
         const options = {
@@ -68,7 +114,7 @@ const callGeminiDirect = (prompt, apiKey) => {
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(body)
             },
-            timeout: 15000
+            timeout: 20000
         };
 
         const req = https.request(options, (res) => {
@@ -96,32 +142,44 @@ const callGeminiDirect = (prompt, apiKey) => {
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-const getAIResponse = async (content, subject, attempt = 1) => {
+const getAIResponse = async (content, subject, history = [], attempt = 1) => {
     const input = content.trim();
     if (!input) return "I'm listening! Ask me anything. 😊";
 
-    // 1. Math evaluation
+    // 1. Math evaluation (Simple check)
     const math = evaluateMath(input);
-    if (math) return math;
+    if (math && history.length === 0) return math;
 
-    // 2. Local Knowledge Base (instant, offline)
+    // 2. Local Knowledge Base (Instant & Offline)
     const local = getLocalFallback(input, subject);
-    if (local) return local;
+    if (local && history.length === 0) return local;
 
-    // 3. Real Gemini AI (via direct HTTPS)
+    // 3. Cache Check (Zero-Latency for repeating queries)
+    const cacheKey = `${subject}:${input.toLowerCase()}`;
+    if (CHAT_CACHE.has(cacheKey)) {
+        return CHAT_CACHE.get(cacheKey) + "\n\n*(⚡ Instant response from cache)*";
+    }
+
+    // 4. Real Gemini AI
     const apiKey = (process.env.GEMINI_API_KEY || '').trim();
     if (!apiKey || apiKey.length < 20) {
         return "⚠️ No API key configured. Please add `GEMINI_API_KEY` to the server `.env` file.";
     }
 
     try {
-        const prompt = `You are EduGEN AI, an expert educational tutor.
-Subject: ${subject}
-Student Question: "${input}"
+        const systemPrompt = `You are **GURU AI PRO**.
+Be extremely fast, powerful, and precise. 
+For logic/math: Use step-by-step reasoning.
+Tone: Expert Tutor. 😉
+Current Subject: ${subject}`;
 
-Provide a clear, helpful answer with markdown formatting (bold, bullet points, code blocks if needed) and 1-2 relevant emojis. Keep it concise but complete.`;
+        const finalPrompt = history.length === 0 ? `${systemPrompt}\n\nStudent: ${input}` : input;
+        const text = await callGeminiDirect(finalPrompt, history, apiKey);
 
-        const text = await callGeminiDirect(prompt, apiKey);
+        // Update Cache
+        if (CHAT_CACHE.size >= CACHE_LIMIT) CHAT_CACHE.clear();
+        CHAT_CACHE.set(cacheKey, text);
+
         return text;
 
     } catch (error) {
@@ -129,26 +187,20 @@ Provide a clear, helpful answer with markdown formatting (bold, bullet points, c
         const code = error.code || error.status || '';
         console.error(`❌ Gemini API Error (attempt ${attempt}):`, error.message || JSON.stringify(error));
 
-        // Quota exceeded — retry once after delay
-        if ((code === 429 || msg.includes('429') || msg.includes('quota') || msg.includes('exceed')) && attempt < 2) {
-            console.log('🔄 Quota hit, retrying in 3s...');
+        if ((code === 429 || msg.includes('429')) && attempt < 2) {
             await sleep(3000);
-            return getAIResponse(content, subject, attempt + 1);
+            return getAIResponse(content, subject, history, attempt + 1);
         }
 
-        if (code === 429 || msg.includes('quota') || msg.includes('exceed')) {
-            return "⏳ **AI Quota Reached**: You've hit the free tier limit. Please wait 1 minute before asking again.\n\n*Tip: I can still answer common questions from my offline knowledge base!*";
+        if (code === 429 || msg.includes('quota')) {
+            return "⏳ **Quota Exhausted**: Gemini free tier is busy. Try again in 60s.\n*GURU AI is working on it!*";
         }
 
-        if (msg.includes('timed out') || msg.includes('timeout')) {
-            return "🕐 **Request Timeout**: The AI took too long to respond. Please try again in a few seconds.";
+        if (msg.includes('leaked') || msg.includes('safety') || code === 400) {
+            return "🛑 **Security Block**: Your API key was reported as leaked (likely because it was visible in a public place). \n\n**Action Required:** \n1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey). \n2. Delete the old key. \n3. Generate a **NEW** key. \n4. Update it in your `.env` file.";
         }
 
-        if (msg.includes('invalid') || msg.includes('api key') || code === 400 || code === 401) {
-            return "🔑 **Invalid API Key**: The GEMINI_API_KEY in `.env` is not valid. Please generate a new key from [Google AI Studio](https://aistudio.google.com/).";
-        }
-
-        return `🛸 AI is temporarily unavailable. Please try again in a moment. *(${error.message})*`;
+        return `🛸 GURU AI Error: ${error.message}`;
     }
 };
 
@@ -165,9 +217,22 @@ exports.getMessages = async (req, res) => {
 exports.sendMessage = async (req, res) => {
     try {
         const { content, subject = 'General' } = req.body;
+
+        // Fetch last 6 messages for context
+        const history = await Message.find({ user: req.user._id })
+            .sort({ createdAt: -1 })
+            .limit(6);
+
+        // Reverse to get chronological order
+        const formattedHistory = history.reverse().map(m => ({
+            role: m.role,
+            content: m.content
+        }));
+
         await Message.create({ user: req.user._id, role: 'user', content, subject });
-        const aiText = await getAIResponse(content, subject);
+        const aiText = await getAIResponse(content, subject, formattedHistory);
         const aiMsg = await Message.create({ user: req.user._id, role: 'assistant', content: aiText, subject });
+
         res.json({ success: true, message: aiMsg });
     } catch (err) {
         console.error('❌ sendMessage Error:', err);

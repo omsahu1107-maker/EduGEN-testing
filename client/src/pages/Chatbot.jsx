@@ -3,7 +3,7 @@ import api from '../api';
 import { toast, Spinner } from '../components/UI';
 import { useAuth } from '../context/AuthContext';
 
-const SUBJECTS = ['General', 'Mathematics', 'Physics', 'Chemistry', 'Programming', 'English'];
+const SUBJECTS = ['General', 'Mathematics', 'Physics', 'Chemistry', 'Programming', 'English', 'Logic'];
 
 export default function Chatbot() {
     const { user } = useAuth();
@@ -14,6 +14,7 @@ export default function Chatbot() {
     const [sending, setSending] = useState(false);
     const [listening, setListening] = useState(false);
     const [typing, setTyping] = useState(false);
+    const [powerMode] = useState(true);
     const bottomRef = useRef(null);
     const recognitionRef = useRef(null);
 
@@ -81,8 +82,12 @@ export default function Chatbot() {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div>
-                    <h1 style={{ fontWeight: 800, fontSize: '1.5rem' }}>🤖 AI Study Assistant</h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.83rem' }}>Get instant help with your doubts</p>
+                    <h1 style={{ fontWeight: 800, fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ fontSize: '1.8rem' }}>🧠</span> GURU AI
+                        <span className="badge badge-purple" style={{ fontSize: '0.65rem' }}>PRO</span>
+                        <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>⚡ POWER MODE</span>
+                    </h1>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.83rem' }}>Ultra-Fast Reasoning & Logical Solver</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     <select className="input-field" value={subject} onChange={e => setSubject(e.target.value)} style={{ padding: '8px 12px', fontSize: '0.85rem', width: 'auto' }}>
@@ -96,9 +101,11 @@ export default function Chatbot() {
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0', background: 'transparent', border: 'none' }}>
                 {messages.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: 12 }}>🤖</div>
-                        <p style={{ marginBottom: 8 }}>Hi {user?.name}! I'm your AI Study Assistant.</p>
-                        <p style={{ fontSize: '0.85rem' }}>Ask me anything about {subject}!</p>
+                        <div style={{ fontSize: '4rem', marginBottom: 12 }}>🧠</div>
+                        <p style={{ marginBottom: 8, fontSize: '1.1rem', fontWeight: 600, color: '#fff' }}>I am GURU AI</p>
+                        <p style={{ fontSize: '0.85rem', maxWidth: 400, margin: '0 auto' }}>
+                            I've been upgraded! I can now solve complex **logical puzzles**, **coding bugs**, and **math problems** with step-by-step reasoning.
+                        </p>
                     </div>
                 )}
                 {messages.map(msg => (

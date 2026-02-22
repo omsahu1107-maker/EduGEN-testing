@@ -40,159 +40,244 @@ export default function Dashboard() {
 
     return (
         <div className="page-container stagger">
-            {/* Welcome */}
-            <div className="card glass-hover" style={{ marginBottom: 20, background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '3rem' }}>{user?.avatar || '🎓'}</span>
-                    <div style={{ flex: 1 }}>
-                        <h1 style={{ fontWeight: 800, fontSize: '1.5rem' }}>
-                            Welcome back, <span className="grad-text">{user?.name}!</span>
-                        </h1>
-                        <p style={{ color: 'var(--text-muted)', marginTop: 4, fontSize: '0.9rem' }}>
-                            Keep up the great work. You're on a <strong style={{ color: 'var(--neon-orange)' }}>{user?.streak} day streak</strong>!
-                        </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: 10 }}>
-                        <span className={`badge ${user?.role === 'admin' ? 'badge-orange' : 'badge-purple'}`}>
-                            {user?.role === 'admin' ? '🛡️ Admin' : `📚 ${user?.level}`}
-                        </span>
-                    </div>
-                </div>
-                <div style={{ marginTop: 20 }}>
-                    <XPBar xp={user?.xp || 0} level={user?.level || 'Beginner'} />
-                </div>
-            </div>
+            <header style={{ marginBottom: 32 }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: 8 }}>
+                    Dashboard <span style={{ color: 'var(--neon-purple)', fontSize: '1rem', fontWeight: 500, opacity: 0.7 }}>/ Overview</span>
+                </h1>
+                <p style={{ color: 'var(--text-secondary)' }}>Welcome back to your personalized learning space.</p>
+            </header>
 
-            {/* Motivational Quote */}
-            <div className="card" style={{ marginBottom: 20, background: 'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(239,68,68,0.06))', borderColor: 'rgba(245,158,11,0.2)' }}>
-                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: '1.5rem' }}>💡</span>
-                    <div>
-                        <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>"{quote.text}"</p>
-                        <p style={{ color: 'var(--neon-orange)', fontSize: '0.8rem', marginTop: 6, fontWeight: 600 }}>— {quote.author}</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="stats-grid">
-                <StatCard icon="⭐" label="Total XP Earned" value={user?.xp || 0} color="var(--neon-purple)" />
-                <StatCard icon="🔥" label="Day Streak" value={user?.streak || 0} color="var(--neon-orange)" />
-                <StatCard icon="⏱️" label="Study Hours" value={(user?.totalStudyHours || 0).toFixed(1)} suffix="h" color="var(--neon-cyan)" />
-                <StatCard icon="🎯" label="Quizzes Done" value={quizResults.length} color="var(--neon-green)" />
-            </div>
-
-            {/* AI Focus Monitor Banner */}
-            <div className="card" style={{ marginBottom: 20, marginTop: 4, background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(16,185,129,0.08))', borderColor: 'rgba(99,102,241,0.25)', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                <div style={{ fontSize: '2.2rem' }}>👁️</div>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: 2 }}>AI Focus & Sleep Detector</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Real-time webcam monitoring — detects if you fall asleep during study sessions</div>
-                </div>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    <span className="badge badge-green">🟢 Eye Detection</span>
-                    <span className="badge badge-purple">🔴 Sleep Alert</span>
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.04)', padding: '6px 12px', borderRadius: 8, border: '1px solid var(--border)' }}>
-                    👇 See bottom-right corner
-                </div>
-            </div>
-
-            {/* Lucky Spin Banner */}
-            {(() => {
-                const lastSpin = user?.lastSpinDate ? new Date(user.lastSpinDate) : null;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const canSpin = !lastSpin || lastSpin < today;
-
-                return (
-                    <Link to="/spin" className="card glass-hover" style={{
-                        marginBottom: 20,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 16,
-                        background: canSpin ? 'linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.1))' : 'rgba(255,255,255,0.03)',
-                        borderColor: canSpin ? 'rgba(251,191,36,0.4)' : 'var(--border)',
-                        textDecoration: 'none',
-                        color: 'inherit'
-                    }}>
-                        <div style={{ fontSize: '2rem' }}>🎰</div>
+            {/* Top Section: Welcome & Focus */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 24 }}>
+                {/* Welcome Card */}
+                <div className="card glass-premium animate-fade-up" style={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))',
+                    border: '1px solid rgba(99,102,241,0.3)'
+                }}>
+                    <div style={{ position: 'absolute', top: -20, right: -20, fontSize: '8rem', opacity: 0.1, pointerEvents: 'none' }}>🎓</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                        <div style={{
+                            width: 80, height: 80, borderRadius: '50%',
+                            background: 'var(--bg-secondary)', border: '2px solid var(--neon-purple)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem',
+                            boxShadow: 'var(--shadow-neon-purple)'
+                        }}>
+                            {user?.avatar || '🎓'}
+                        </div>
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: 700, fontSize: '1rem', color: canSpin ? '#fbbf24' : 'var(--text-muted)' }}>
-                                {canSpin ? 'Lucky Spin is Available! 🎰' : 'Daily Spin Claimed'}
-                            </div>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                                {canSpin ? 'Spin the wheel now to get bonus XP!' : 'Come back tomorrow for more rewards.'}
+                            <h2 style={{ fontWeight: 800, fontSize: '1.6rem', marginBottom: 4 }}>
+                                Hi, <span className="grad-text">{user?.name}!</span>
+                            </h2>
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <span className="badge badge-purple" style={{ textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem' }}>Level {user?.level}</span>
+                                <span className="badge badge-orange" style={{ textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.65rem' }}>🔥 {user?.streak} Day Streak</span>
                             </div>
                         </div>
-                        {canSpin && (
-                            <button className="btn btn-primary btn-sm" style={{ background: '#fbbf24', color: '#000', border: 'none' }}>
-                                Spin Now
-                            </button>
-                        )}
-                    </Link>
-                );
-            })()}
-
-            {/* Charts */}
-            <div className="dashboard-grid" style={{ marginTop: 20 }}>
-                {/* Study hours chart */}
-                <div className="card">
-                    <h3 style={{ fontWeight: 700, marginBottom: 20, fontSize: '1rem' }}>📊 Weekly Study Hours</h3>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <BarChart data={STUDY_DATA}>
-                            <XAxis dataKey="day" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
-                            <Tooltip contentStyle={{ background: 'rgba(10,10,31,0.95)', border: '1px solid var(--border)', borderRadius: 8, color: '#fff' }} />
-                            <Bar dataKey="hours" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    </div>
+                    <div style={{ marginTop: 24 }}>
+                        <XPBar xp={user?.xp || 0} level={user?.level || 'Beginner'} />
+                    </div>
                 </div>
 
-                {/* Right panel */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {/* Quiz performance */}
-                    <div className="card" style={{ flex: 1 }}>
-                        <h3 style={{ fontWeight: 700, marginBottom: 16, fontSize: '1rem' }}>🧠 Quiz Accuracy</h3>
+                {/* AI Focus Monitor Banner */}
+                <div className="card glass-premium animate-fade-up" style={{
+                    animationDelay: '0.1s',
+                    background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.05))',
+                    border: '1px solid rgba(16,185,129,0.2)'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+                        <div className="badge badge-green">LIVE MONITOR</div>
+                        <div style={{ fontSize: '1.5rem' }}>👁️</div>
+                    </div>
+                    <h3 style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 8 }}>AI Focus & Sleep Detector</h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: 15 }}>
+                        Webcam monitoring is active. We'll alert you if you fall asleep during study sessions.
+                    </p>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                        <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: 6 }}>🟢 Eyes Detection</span>
+                        <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: 6 }}>🔴 Sleep Alert</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Middle Section: Stats & Quote */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>
+                <div className="stat-card glass-hover animate-fade-up" style={{ animationDelay: '0.15s' }}>
+                    <div className="stat-icon" style={{ background: 'rgba(99,102,241,0.15)', color: 'var(--neon-purple)' }}>⭐</div>
+                    <div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{user?.xp || 0}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Total XP</div>
+                    </div>
+                </div>
+                <div className="stat-card glass-hover animate-fade-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="stat-icon" style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--neon-orange)' }}>🔥</div>
+                    <div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{user?.streak || 0}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Streak</div>
+                    </div>
+                </div>
+                <div className="stat-card glass-hover animate-fade-up" style={{ animationDelay: '0.25s' }}>
+                    <div className="stat-icon" style={{ background: 'rgba(6,182,212,0.15)', color: 'var(--neon-cyan)' }}>⏱️</div>
+                    <div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{(user?.totalStudyHours || 0).toFixed(1)}h</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Study Time</div>
+                    </div>
+                </div>
+                <div className="stat-card glass-hover animate-fade-up" style={{ animationDelay: '0.3s' }}>
+                    <div className="stat-icon" style={{ background: 'rgba(16,185,129,0.15)', color: 'var(--neon-green)' }}>🎯</div>
+                    <div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 800 }}>{quizResults.length}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Quizzes</div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Quote Card - Premium Styling */}
+            <div className="card glass-premium animate-fade-up" style={{
+                animationDelay: '0.35s',
+                marginBottom: 32,
+                textAlign: 'center',
+                background: 'linear-gradient(rgba(10,10,31,0.8), rgba(10,10,31,0.8)), url("https://www.transparenttextures.com/patterns/dark-matter.png")',
+                border: '1px dashed var(--border)'
+            }}>
+                <div style={{ color: 'var(--neon-purple)', fontSize: '1.5rem', marginBottom: 12 }}>“</div>
+                <p style={{ fontSize: '1.1rem', fontStyle: 'italic', fontWeight: 500, color: 'var(--text-primary)', marginBottom: 12 }}>
+                    {quote.text}
+                </p>
+                <div style={{ fontSize: '0.85rem', color: 'var(--neon-purple)', fontWeight: 700 }}>— {quote.author}</div>
+            </div>
+
+            {/* Main Content: Charts & Quick Actions (Bento Grid Style) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr', gap: 24 }}>
+                {/* Left: Progress Charts */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                    <div className="card glass-premium">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                            <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>📈 Learning Activity</h3>
+                            <div className="badge badge-purple" style={{ fontSize: '0.7rem' }}>LAST 7 DAYS</div>
+                        </div>
+                        <ResponsiveContainer width="100%" height={280}>
+                            <BarChart data={STUDY_DATA}>
+                                <defs>
+                                    <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="var(--neon-purple)" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="var(--neon-blue)" stopOpacity={0.6} />
+                                    </linearGradient>
+                                </defs>
+                                <XAxis dataKey="day" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.03)' }} contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 12, color: '#fff' }} />
+                                <Bar dataKey="hours" fill="url(#barGrad)" radius={[6, 6, 0, 0]} barSize={32} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className="card glass-premium">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                            <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>🧠 Quiz Performance</h3>
+                            <Link to="/quiz" style={{ fontSize: '0.8rem', color: 'var(--neon-purple)', textDecoration: 'none' }}>Expand Details →</Link>
+                        </div>
                         {quizChartData.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={120}>
+                            <ResponsiveContainer width="100%" height={180}>
                                 <LineChart data={quizChartData}>
-                                    <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} axisLine={false} />
-                                    <YAxis domain={[0, 100]} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} axisLine={false} />
-                                    <Tooltip contentStyle={{ background: 'rgba(10,10,31,0.95)', border: '1px solid var(--border)', borderRadius: 8, color: '#fff' }} formatter={(v) => [`${v}%`, 'Accuracy']} />
-                                    <Line type="monotone" dataKey="accuracy" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
+                                    <Tooltip contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 12 }} />
+                                    <Line type="monotone" dataKey="accuracy" stroke="var(--neon-green)" strokeWidth={3} dot={{ r: 4, fill: 'var(--neon-green)' }} activeDot={{ r: 6 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         ) : (
-                            <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                                Take your first quiz to see stats! 🎯
+                            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
+                                <div style={{ fontSize: '2rem', marginBottom: 10 }}>🎯</div>
+                                <p>Take your first quiz to track progress!</p>
                             </div>
                         )}
                     </div>
+                </div>
 
-                    {/* Quick Links */}
-                    <div className="card">
-                        <h3 style={{ fontWeight: 700, marginBottom: 12, fontSize: '1rem' }}>⚡ Quick Start</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {/* Right: Quick Actions & Daily Spin */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                    {/* Lucky Spin Widget */}
+                    {(() => {
+                        const lastSpin = user?.lastSpinDate ? new Date(user.lastSpinDate) : null;
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const canSpin = !lastSpin || lastSpin < today;
+
+                        return (
+                            <Link to="/spin" className="card glass-premium animate-pulse-glow" style={{
+                                textDecoration: 'none', color: 'inherit',
+                                background: canSpin ? 'linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.05))' : 'rgba(255,255,255,0.02)',
+                                border: `1px solid ${canSpin ? '#fbbf2455' : 'var(--border)'}`
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                    <div style={{ fontSize: '2.5rem', animation: canSpin ? 'fm-shake 2s infinite' : 'none' }}>🎰</div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 800, color: canSpin ? '#fbbf24' : 'var(--text-muted)' }}>
+                                            {canSpin ? 'DAILY SPIN READY' : 'SPIN COLLECTED'}
+                                        </div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                                            {canSpin ? 'Try your luck for bonus XP today!' : 'Resetting in a few hours...'}
+                                        </div>
+                                    </div>
+                                    {canSpin && <div style={{ fontSize: '1.2rem', color: '#fbbf24' }}>▶</div>}
+                                </div>
+                            </Link>
+                        );
+                    })()}
+
+                    {/* Quick Access Bento */}
+                    <div className="card glass-premium">
+                        <h3 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: 20 }}>⚡ Quick Actions</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                             {[
-                                { to: '/quiz', icon: '🧠', label: 'Take a Quiz', badge: '+XP' },
-                                { to: '/chatbot', icon: '🤖', label: 'Ask AI Tutor', badge: 'Live' },
-                                { to: '/roadmap', icon: '🧭', label: 'View Roadmap', badge: '5 subjects' },
-                                { to: '/goals', icon: '🎯', label: 'Set Goals', badge: 'Daily' },
-                                { to: '/reminders', icon: '⏰', label: 'Set Alarms', badge: 'Active' },
-                            ].map(link => (
-                                <Link key={link.to} to={link.to} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, textDecoration: 'none', color: 'var(--text-secondary)', transition: 'all 0.2s', border: '1px solid transparent' }}
-                                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-card-hover)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}>
-                                    <span style={{ fontSize: '1.1rem' }}>{link.icon}</span>
-                                    <span style={{ flex: 1, fontSize: '0.88rem' }}>{link.label}</span>
-                                    <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>{link.badge}</span>
+                                { to: '/quiz', icon: '🧠', label: 'Quiz', color: 'var(--neon-purple)' },
+                                { to: '/chatbot', icon: '🤖', label: 'AI Tutor', color: 'var(--neon-blue)' },
+                                { to: '/roadmap', icon: '🧭', label: 'Roadmap', color: 'var(--neon-orange)' },
+                                { to: '/leaderboard', icon: '🏆', label: 'Rank', color: 'var(--neon-cyan)' },
+                                { to: '/timetable', icon: '📅', label: 'Schedule', color: 'var(--neon-green)' },
+                                { to: '/reminders', icon: '⏰', label: 'Alarms', color: 'var(--neon-pink)' },
+                            ].map(item => (
+                                <Link key={item.label} to={item.to} className="glass-hover" style={{
+                                    padding: '16px 12px', borderRadius: 12, textDecoration: 'none',
+                                    textAlign: 'center', background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid var(--border)'
+                                }}>
+                                    <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>{item.icon}</div>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)' }}>{item.label}</div>
                                 </Link>
                             ))}
                         </div>
                     </div>
+
+                    {/* Motivational Goals */}
+                    <div className="card glass-premium" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 15 }}>
+                            <span style={{ fontSize: '1.2rem' }}>🎯</span>
+                            <h4 style={{ fontWeight: 700, fontSize: '0.9rem' }}>Current Goals</h4>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ padding: '10px 12px', background: 'rgba(99,102,241,0.05)', borderRadius: 8, borderLeft: '3px solid var(--neon-purple)' }}>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>Solve 10 Math MCQs</div>
+                                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 4 }}>Progress: 40%</div>
+                            </div>
+                            <div style={{ padding: '10px 12px', background: 'rgba(16,185,129,0.05)', borderRadius: 8, borderLeft: '3px solid var(--neon-green)' }}>
+                                <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>2h Deep Study Session</div>
+                                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 4 }}>Complete to earn 50 XP</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {/* Mobile Responsive Adjustments (Inline Media Query Replacement) */}
+            <style>{`
+                @media (max-width: 1024px) {
+                    .dashboard-grid, div[style*="grid-template-columns: 2fr 1.2fr"] {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
