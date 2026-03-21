@@ -2,10 +2,6 @@
     "version": 2,
     "builds": [
         {
-            "src": "server/server.js",
-            "use": "@vercel/node"
-        },
-        {
             "src": "client/package.json",
             "use": "@vercel/static-build",
             "config": {
@@ -13,14 +9,10 @@
             }
         }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/api/(.*)",
-            "destination": "/server/server.js"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/client/$1"
+            "src": "/(.*)",
+            "dest": "/client/$1"
         }
     ]
 }

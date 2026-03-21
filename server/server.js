@@ -25,20 +25,32 @@ const app = express();
 app.use(helmet());
 app.use(cors({
     origin: (origin, callback) => {
+        // Log the origin for debugging
+        console.log('--- CORS Check ---');
+        console.log('Origin:', origin);
+
         const allowedOrigins = [
             'http://localhost:5173',
             'https://localhost:5173',
+            'http://localhost:5174',
+            'https://localhost:5174',
+            'http://localhost:5175',
+            'https://localhost:5175',
             'http://localhost:3000',
             'http://127.0.0.1:5173',
+            'http://127.0.0.1:5174',
+            'https://127.0.0.1:5174',
             process.env.CLIENT_URL,
         ].filter(Boolean);
 
         const isVercel = origin && origin.endsWith('.vercel.app');
+        const isLocal = origin && (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('[::1]'));
+        const isNull = !origin || origin === 'null';
 
-        // Allow requests with no origin (like mobile apps or curl) or Vercel
-        if (!origin || allowedOrigins.includes(origin) || isVercel) {
+        if (isNull || allowedOrigins.includes(origin) || isVercel || isLocal) {
             callback(null, true);
         } else {
+            console.error('❌ CORS BLOCKED:', origin);
             callback(new Error('Not allowed by CORS'));
         }
     },

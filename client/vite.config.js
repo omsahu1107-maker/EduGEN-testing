@@ -2,17 +2,15 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 
-// HTTPS is required so Edge allows getUserMedia / enumerateDevices.
-// Without HTTPS, Edge's Privacy Sandbox returns 0 video devices even
-// when the site permission is "Allowed".
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     react(),
-    basicSsl(),   // self-signed cert → secure context → camera works
+    // Only use HTTPS in dev mode (needed for camera in Edge's Privacy Sandbox)
+    ...(command === 'serve' ? [basicSsl()] : []),
   ],
   server: {
-    port: 5173,
-    https: true,
+    port: 5174,
+    https: command === 'serve' ? true : false,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:5001',
@@ -20,4 +18,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))
